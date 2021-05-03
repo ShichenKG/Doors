@@ -22,32 +22,34 @@ class Title(arcade.View):
     # Setting up what the player can see
     def setup(self):
         # Adds the image to the background
-        self.background = arcade.load_texture('wide.png')
+        self.background = arcade.load_texture('mmr.png')
 
-        button_normal = arcade.load_texture('Q1.png')
-        hovered_texture = arcade.load_texture('Q2.png')
-        pressed_texture = arcade.load_texture('Q1.png')
+        button_normal = arcade.load_texture('P1.png')
+        hovered_texture = arcade.load_texture('P2.png')
+        pressed_texture = arcade.load_texture('P3.png')
         button = arcade.gui.UIImageButton(
-            center_x = 620,
-            center_y = 380,
+            center_x = 350,
+            center_y = 523,
             normal_texture=button_normal,
             hover_texture=hovered_texture,
             press_texture=pressed_texture,
         )
         self.ui_manager.add_ui_element(button)
 
-        button_normal = arcade.load_texture('S1.png')
-        hovered_texture = arcade.load_texture('S2.png')
-        pressed_texture = arcade.load_texture('S1.png')
+        button_normal = arcade.load_texture('DL1.png')
+        hovered_texture = arcade.load_texture('DL2.png')
+        pressed_texture = arcade.load_texture('DL2.png')
         button2 = arcade.gui.UIImageButton(
-            center_x=620,
-            center_y=460,
+            center_x=800,
+            center_y=470,
             normal_texture=button_normal,
             hover_texture=hovered_texture,
             press_texture=pressed_texture,
         )
 
         self.ui_manager.add_ui_element(button2)
+
+        self.sprite1 = arcade.Sprite('B1.png', center_x=640, center_y=360)
 
     def on_draw(self):
         arcade.start_render()
@@ -61,10 +63,17 @@ class Title(arcade.View):
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
 
+    def on_mouse_press(self,x,y,button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            Gameview()
+
+
+
 class DoorOS(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title, resizable=True)
         self.set_location(400,200)
+
 
     def on_draw(self):
         arcade.set_background_color(Light_Blue)
