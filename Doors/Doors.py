@@ -1,4 +1,5 @@
 import arcade
+import Door_Buttons
 
 import arcade.gui
 from arcade.gui import UIFlatButton, UIGhostFlatButton, UIManager
@@ -18,6 +19,7 @@ class Title(arcade.View):
 
         #Background image will be stored here
         self.background = None
+
 
     # Setting up what the player can see
     def setup(self):
@@ -49,7 +51,19 @@ class Title(arcade.View):
 
         self.ui_manager.add_ui_element(button2)
 
-        self.sprite1 = arcade.Sprite('B1.png', center_x=640, center_y=360)
+        self.quit_list = arcade.SpriteList()
+        self.quit = arcade.AnimatedTimeBasedSprite()
+        self.quit.textures = []
+
+        self.quit.textures.append(arcade.load_texture('B1.png'))
+        self.quit.textures.append(arcade.load_texture('B2.png'))
+        self.quit.textures.append(arcade.load_texture('B3.png'))
+        self.quit.textures.append(arcade.load_texture('B4.png'))
+        self.quit.textures.append(arcade.load_texture('B5.png'))
+
+        self.quit.center_x = 640
+        self.quit.center_y = 360
+
 
     def on_draw(self):
         arcade.start_render()
@@ -64,30 +78,94 @@ class Title(arcade.View):
         self.ui_manager.unregister_handlers()
 
     def on_mouse_press(self,x,y,button, modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            Gameview()
+
+        if self.button.collides_with_point((x, y)):
+            self.button.click()
+            print('Start')
+
+        elif self.button2.collides_with_point((x, y)):
+            self.button2.click()
+            print('Quit')
 
 
 
-class DoorOS(arcade.Window):
-    def __init__(self, width, height, title):
-        super().__init__(width, height, title, resizable=True)
-        self.set_location(400,200)
 
+class DoorOS(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.ui_manager = UIManager()
+
+        #Background image will be stored here
+        self.background = None
+
+    def setup(self):
+        button_normal = arcade.load_texture('Trash.png')
+        hovered_texture = arcade.load_texture('Trash2.png')
+        pressed_texture = arcade.load_texture('Trash2.png')
+        button3 = arcade.gui.UIImageButton(
+            center_x=60,
+            center_y=670,
+            normal_texture=button_normal,
+            hover_texture=hovered_texture,
+            press_texture=pressed_texture,
+        )
+
+        self.ui_manager.add_ui_element(button3)
+
+        button_normal = arcade.load_texture('E.png')
+        hovered_texture = arcade.load_texture('E.png')
+        pressed_texture = arcade.load_texture('E.png')
+        button4 = arcade.gui.UIImageButton(
+            center_x=60,
+            center_y=530,
+            normal_texture=button_normal,
+            hover_texture=hovered_texture,
+            press_texture=pressed_texture,
+        )
+
+        self.ui_manager.add_ui_element(button4)
+        button_normal = arcade.load_texture('Sh1.png')
+        hovered_texture = arcade.load_texture('Sh2.png')
+        pressed_texture = arcade.load_texture('Sh1.png')
+        button5 = arcade.gui.UIImageButton(
+            center_x=60,
+            center_y=410,
+            normal_texture=button_normal,
+            hover_texture=hovered_texture,
+            press_texture=pressed_texture,
+        )
+
+        self.ui_manager.add_ui_element(button5)
+
+        button_normal = arcade.load_texture('DoorG1.png')
+        hovered_texture = arcade.load_texture('DoorG2.png')
+        pressed_texture = arcade.load_texture('DoorG1.png')
+        button6 = arcade.gui.UIImageButton(
+            center_x=60,
+            center_y=270,
+            normal_texture=button_normal,
+            hover_texture=hovered_texture,
+            press_texture=pressed_texture,
+        )
+
+        self.ui_manager.add_ui_element(button6)
 
     def on_draw(self):
         arcade.set_background_color(Light_Blue)
         arcade.start_render()
 
+    def on_show_view(self):
+        self.setup()
+
+    def on_hide_view(self):
+        self.ui_manager.unregister_handlers()
 
 
-def TitleScreen():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT,title='Doors')
-    window.show_view(Title())
+def Main():
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT,SCREEN_TITLE)
+    title_screen = Title()
+    window.show_view(title_screen)
     arcade.run()
 
-def Gameview():
-    DoorOS(SCREEN_WIDTH,SCREEN_HEIGHT,'DoorOS')
-    arcade.run()
 
-TitleScreen()
+Main()
