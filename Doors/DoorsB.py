@@ -2,6 +2,32 @@ import pygame, time, sys
 
 from pygame.locals import *
 
+# Plays an animation for
+class QuitAnim(pygame.sprite.Sprite):
+    def __init__(self,pos_x,pos_y):
+        super().__init__()
+        self.sprites = []
+        self.sprites.append(pygame.image.load('B1.png'))
+        self.sprites.append(pygame.image.load('B2.png'))
+        self.sprites.append(pygame.image.load('B3.png'))
+        self.sprites.append(pygame.image.load('B4.png'))
+        self.sprites.append(pygame.image.load('B5.png'))
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
+
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [pos_x, pos_y]
+
+    def update(self):
+        clock.tick(12)
+        self.current_sprite += 1
+
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite = 4
+
+        self.image = self.sprites[self.current_sprite]
+
+
 class button():
     def __init__(self, color, x, y, width, height, text='', font = '',size = 60):
         self.color = color
@@ -14,6 +40,7 @@ class button():
         self.size = size
 
     def draw(self, win, outline=None):
+        pos = pygame.mouse.get_pos()
         # Call this method to draw the button on the screen
         if outline:
             pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
@@ -26,7 +53,6 @@ class button():
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
-    pos = pygame.mouse.get_pos()
 
     if button_rect.collidepoint(pos):
         if pygame.mouse.get_pressed()[0] == 1:
@@ -57,6 +83,8 @@ def main_menu():
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
             if event.type == QUIT:
+                moving_sprites.draw(screen)
+                moving_sprites.update()
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -79,7 +107,6 @@ def main_menu():
 
 
 def game():
-    # NCS, "Sunburst" by Tobu & Itro
     running = True
     player = Player()
     while running:
@@ -178,6 +205,5 @@ FPS = 60
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-file = 'some.mp3'
 
 main_menu()
