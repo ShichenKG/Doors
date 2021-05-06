@@ -51,6 +51,8 @@ def Title():
                 mouse_pos = pygame.mouse.get_pos()
                 if start.get_rect(center=(650,100)).collidepoint(mouse_pos):
                     Mainscreen()
+                if quit.get_rect(center=(300,150)).collidepoint(mouse_pos):
+                    quitanim()
 
 
         clock.tick(60)
@@ -77,7 +79,7 @@ def quitanim():
             screen.fill((240,240,240))
             moving_sprites.draw(screen)
             moving_sprites.update(0.40)
-            pygame.display.flip()
+        pygame.display.flip()
         clock.tick(60)
 
 
