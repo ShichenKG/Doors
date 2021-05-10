@@ -97,7 +97,7 @@ def Mainscreen():
     screen.blit(internet, (20, 150))
     screen.blit(shop, (20, 270))
     screen.blit(doorgame, (20, 380))
-    screen.blit(start, (20, 380))
+    screen.blit(start, (0, 455))
     # Event Loop / Game Loop
     while True:
         for event in pygame.event.get():
@@ -106,16 +106,19 @@ def Mainscreen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if trash.get_rect(center=(650, 100)).collidepoint(mouse_pos):
+                if trash.get_rect(center=(25, 10)).collidepoint(mouse_pos):
                     pass
 
-                if internet.get_rect(center=(650, 100)).collidepoint(mouse_pos):
+                if internet.get_rect(center=(20, 150)).collidepoint(mouse_pos):
                     pass
 
-                if shop.get_rect(center=(650, 100)).collidepoint(mouse_pos):
+                if shop.get_rect(center=(20, 279)).collidepoint(mouse_pos):
                     pass
 
-                if doorgame.get_rect(center=(650, 100)).collidepoint(mouse_pos):
+                if doorgame.get_rect(center=(20, 380)).collidepoint(mouse_pos):
+                    pass
+
+                if start.get_rect(center=(0,455)).collidepoint(mouse_pos):
                     pass
         clock.tick(60)
         pygame.display.flip()
