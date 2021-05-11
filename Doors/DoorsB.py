@@ -30,10 +30,25 @@ class Images(pygame.sprite.Sprite):
     def __init__(self,pos_x,pos_y):
         super().__init__()
 
+def Hover(image1,image2,x,y):
+    mouse_pos = pygame.mouse.get_pos()
 
+    l = pygame.sprite.Sprite
+    l.img1 = pygame.image.load(image1).convert_alpha()
+    l.img2 = pygame.image.load(image2).convert_alpha()
+    l.img_mask = pygame.mask.from_surface(l.img1)
+    l.img_rect = l.img1.get_rect(center = (x,y))
+    l.cur_img = l.img1
+
+    if l.img_rect.collidepoint(mouse_pos):
+        l.cur_img = l.img2
+    else:
+        l.cur_img = l.img1
+    screen.blit(l.cur_img, (x,y))
 
 
 def Title():
+    title = True
     background = pygame.image.load('mmr.png').convert()
     start = pygame.image.load('DL1.png').convert_alpha()
     quit = pygame.image.load('P1.png').convert_alpha()
@@ -42,7 +57,7 @@ def Title():
     screen.blit(quit, (325,175))
     screen.blit(start, (690,190))
     # Event Loop / Game Loop
-    while True:
+    while title:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -50,8 +65,10 @@ def Title():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if start.get_rect(center=(690,190)).collidepoint(mouse_pos):
+                    title = False
                     Mainscreen()
                 if quit.get_rect(center=(325,175)).collidepoint(mouse_pos):
+                    title = False
                     quitanim()
 
 
@@ -60,10 +77,11 @@ def Title():
 
 
 def quitanim():
+    isquitting = True
     CLOSE = pygame.USEREVENT + 1
     pygame.time.set_timer(CLOSE, 1600)
     # Event Loop / Game Loop
-    while True:
+    while isquitting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -82,6 +100,7 @@ def quitanim():
 
 
 def Mainscreen():
+    main = True
     screen.fill((73, 166, 160))
     trash = pygame.image.load('Trash.png').convert_alpha()
     internet = pygame.image.load('E.png').convert_alpha()
@@ -97,9 +116,9 @@ def Mainscreen():
     screen.blit(internet, (20, 150))
     screen.blit(shop, (20, 270))
     screen.blit(doorgame, (20, 380))
-    screen.blit(start, (0, 455))
+    screen.blit(start, (0, 660))
     # Event Loop / Game Loop
-    while True:
+    while main:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -118,18 +137,62 @@ def Mainscreen():
                 if doorgame.get_rect(center=(20, 380)).collidepoint(mouse_pos):
                     pass
 
-                if start.get_rect(center=(0,455)).collidepoint(mouse_pos):
-                    pass
+                if start.get_rect(center=(0,660)).collidepoint(mouse_pos):
+                    startbar = pygame.image.load('dm5.png').convert_alpha()
+                    apps = pygame.image.load('apps1.png').convert_alpha()
+                    games = pygame.image.load('games1.png').convert_alpha()
+                    power = pygame.image.load('pow1.png').convert_alpha()
+                    setting = pygame.image.load('set1.png').convert_alpha()
+                    screen.blit(startbar, (0, 455))
+                    screen.blit(apps, (20, 465))
+                    screen.blit(games, (20, 535))
+                    screen.blit(power, (10, 640))
+                    screen.blit(setting, (115, 605))
+                    if setting.get_rect(center=(115, 605)).collidepoint(mouse_pos):
+                        Settings()
+                    if power.get_rect(center=(10,640)).collidepoint(mouse_pos):
+                        main = False
+                        quitanim()
+
+
         clock.tick(60)
         pygame.display.flip()
 
 
 def Settings():
-    pass
+    set = True
+    background = pygame.image.load('settings.png').convert_alpha()
+    customize = pygame.image.load('pdoor.png').convert_alpha()
+    display = pygame.image.load('Ddoor.png').convert_alpha()
+    sound = pygame.image.load('mdoor.png').convert_alpha()
+
+    screen.blit(background, (0, 0))
+    screen.blit(display, (150, 150))
+    screen.blit(customize, (520, 150))
+    screen.blit(sound, (890, 150))
+    while set:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if display.get_rect(center=(150, 150)).collidepoint(mouse_pos):
+                    set = False
+                    Display()
+
+                if customize.get_rect(center=(520, 150)).collidepoint(mouse_pos):
+                    pass
+
+                if sound.get_rect(center=(890, 150)).collidepoint(mouse_pos):
+                    pass
+
+        clock.tick(60)
+        pygame.display.flip()
 
 
 def Display():
-    pass
+    screen.fill((50,50,50))
 
 pygame.init()
 pygame.mixer.init()
@@ -142,6 +205,21 @@ moving_sprites = pygame.sprite.Group()
 bckgrnd = QuitAnim(0,0)
 moving_sprites.add(bckgrnd)
 
+# Image Variables
+trash = 'Trash.png'
+trash2 = 'Trash2.png'
+internet = 'E.png'
+internet2 = 'E2.png'
+shop = 'Sh1.png'
+shop2 = 'Sh2.png'
+doorgame = 'DoorG1.png'
+doorgame2 = 'DoorG2.png'
+start = 'DL1.png'
+start2 = 'DL2.png'
+quit = 'P1.png'
+quit2 = 'P2.png'
+
+# Random Variables
 successes, failures = pygame.init()
 print("Initializing pygame: {0} successes and {1} failures.".format(successes, failures))
 pygame.time.delay(1000)
