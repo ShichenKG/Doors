@@ -27,8 +27,25 @@ class QuitAnim(pygame.sprite.Sprite):
 
 
 class Images(pygame.sprite.Sprite):
-    def __init__(self,pos_x,pos_y):
+    def __init__(self,image1,image2,x,y):
+        self.x = x
+        self.y = y
         super().__init__()
+        self.sprites = []
+        self.sprites.append(pygame.image.load(image1))
+        self.sprites.append(pygame.image.load(image2))
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
+
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [self.x, self.y]
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+
 
 def Hover(image1,image2,x,y):
     mouse_pos = pygame.mouse.get_pos()
@@ -42,9 +59,10 @@ def Hover(image1,image2,x,y):
 
     if l.img_rect.collidepoint(mouse_pos):
         l.cur_img = l.img2
+        screen.blit(l.cur_img, (x, y))
     else:
         l.cur_img = l.img1
-    screen.blit(l.cur_img, (x,y))
+        screen.blit(l.cur_img, (x,y))
 
 
 def Title():
@@ -53,11 +71,14 @@ def Title():
     start = pygame.image.load('DL1.png').convert_alpha()
     quit = pygame.image.load('P1.png').convert_alpha()
 
-    screen.blit(background, (0, 0))
-    screen.blit(quit, (325,175))
-    screen.blit(start, (690,190))
     # Event Loop / Game Loop
     while title:
+        screen.blit(background, (0, 0))
+        screen.blit(quit, (325, 175))
+        screen.blit(start, (690, 190))
+        E = 'E.png'
+        E2 = 'E2.png'
+        Hover(E,E2,300,300)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -73,6 +94,7 @@ def Title():
 
 
         clock.tick(60)
+        hover_sprites.update()
         pygame.display.flip()
 
 
@@ -200,11 +222,6 @@ mainClock = pygame.time.Clock()
 pygame.display.set_caption('DoorOS')
 font = 'Comic Sans MS'
 
-# Quitting the Game Animation
-moving_sprites = pygame.sprite.Group()
-bckgrnd = QuitAnim(0,0)
-moving_sprites.add(bckgrnd)
-
 # Image Variables
 trash = 'Trash.png'
 trash2 = 'Trash2.png'
@@ -218,6 +235,15 @@ start = 'DL1.png'
 start2 = 'DL2.png'
 quit = 'P1.png'
 quit2 = 'P2.png'
+
+# Quitting the Game Animation
+moving_sprites = pygame.sprite.Group()
+bckgrnd = QuitAnim(0,0)
+moving_sprites.add(bckgrnd)
+hover_sprites = pygame.sprite.Group()
+internetE = Images(internet,internet2,0,0)
+hover_sprites.add(internetE)
+
 
 # Random Variables
 successes, failures = pygame.init()
