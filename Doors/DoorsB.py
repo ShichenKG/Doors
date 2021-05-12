@@ -1,4 +1,5 @@
-import pygame, sys
+import pygame, sys, random
+from random import randint
 from pygame.locals import *
 
 
@@ -45,6 +46,66 @@ class Images(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 
+class Paddle(pygame.sprite.Sprite):
+    # This class represents a car. It derives from the "Sprite" class in Pygame.
+
+    def __init__(self, color, width, height):
+        # Call the parent class (Sprite) constructor
+        super().__init__()
+
+        # Pass in the color of the car, and its x and y position, width and height.
+        # Set the background color and set it to be transparent
+        self.image = pygame.Surface([width, height])
+        self.image.fill(BLACK)
+        self.image.set_colorkey(BLACK)
+
+        # Draw the paddle (a rectangle!)
+        pygame.draw.rect(self.image, color, [0, 0, width, height])
+
+        # Fetch the rectangle object that has the dimensions of the image.
+        self.rect = self.image.get_rect()
+
+    def moveUp(self, pixels):
+        self.rect.y -= pixels
+        # Check that you are not going too far (off the screen)
+        if self.rect.y < 0:
+            self.rect.y = 0
+
+    def moveDown(self, pixels):
+        self.rect.y += pixels
+        # Check that you are not going too far (off the screen)
+        if self.rect.y > 400:
+            self.rect.y = 400
+
+
+class Ball(pygame.sprite.Sprite):
+    # This class represents a car. It derives from the "Sprite" class in Pygame.
+
+    def __init__(self, color, width, height):
+        # Call the parent class (Sprite) constructor
+        super().__init__()
+
+        # Pass in the color of the car, and its x and y position, width and height.
+        # Set the background color and set it to be transparent
+        self.image = pygame.Surface([width, height])
+        self.image.fill(BLACK)
+        self.image.set_colorkey(BLACK)
+
+        # Draw the ball (a rectangle!)
+        pygame.draw.rect(self.image, color, [0, 0, width, height])
+
+        self.velocity = [randint(4, 8), randint(-8, 8)]
+
+        # Fetch the rectangle object that has the dimensions of the image.
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
+    def bounce(self):
+        self.velocity[0] = -self.velocity[0]
+        self.velocity[1] = randint(-8, 8)
 
 
 def Hover(image1,image2,x,y):
@@ -127,6 +188,7 @@ def Mainscreen():
     bar = pygame.image.load('taskbar.png').convert_alpha()
     background = pygame.image.load('background.png').convert_alpha()
     start = pygame.image.load('dm1.png').convert_alpha()
+    pong = pygame.image.load('pong1.png').convert_alpha()
 
     # Event Loop / Game Loop
     while main:
@@ -136,6 +198,7 @@ def Mainscreen():
         Hover(internet1,internet2,20,150)
         Hover(shop1,shop2,20,270)
         Hover(doorgame1,doorgame2,150,10)
+        Hover(pong1,pong2,32,380)
         screen.blit(start, (0, 660))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -155,6 +218,10 @@ def Mainscreen():
                 if doorgame.get_rect(topleft=(100, 10)).collidepoint(mouse_pos):
                     main = False
                     DoorGame()
+
+                if pong.get_rect(topleft=(32,380)).collidepoint(mouse_pos):
+                    main = False
+                    Pong()
 
                 if start.get_rect(topleft=(0,660)).collidepoint(mouse_pos):
                     clicked += 1
@@ -254,6 +321,23 @@ def DoorGame():
         clock.tick(60)
         pygame.display.flip()
 
+def Pong():
+    running = True
+    while running:
+        screen.fill((50, 200, 50))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+                    Mainscreen()
+
+        clock.tick(60)
+        pygame.display.flip()
+
 pygame.init()
 pygame.mixer.init()
 mainClock = pygame.time.Clock()
@@ -287,13 +371,14 @@ Ddoor1 = 'Ddoor.png'
 Ddoor2 = 'Ddoor2.png'
 mdoor1 = 'mdoor.png'
 mdoor2 = 'mdoor2.png'
+pong1 = 'pong1.png'
+pong2 = 'pong2.png'
 
 # Quitting the Game Animation
 moving_sprites = pygame.sprite.Group()
 bckgrnd = QuitAnim(0,0)
 moving_sprites.add(bckgrnd)
 hover_sprites = pygame.sprite.Group()
-
 
 # Random Variables
 successes, failures = pygame.init()
@@ -305,6 +390,9 @@ fullscreen = False
 global num
 num = 1
 clock = pygame.time.Clock()
+BLACK = (0,0,0)
+WHITE = (255,255,255)
 
+# Game Start
 Title()
 
