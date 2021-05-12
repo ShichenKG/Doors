@@ -67,7 +67,7 @@ def Hover(image1,image2,x,y):
 def quitanim():
     isquitting = True
     CLOSE = pygame.USEREVENT + 1
-    pygame.time.set_timer(CLOSE, 1600)
+    pygame.time.set_timer(CLOSE, 500)
     # Event Loop / Game Loop
     while isquitting:
         for event in pygame.event.get():
@@ -79,10 +79,10 @@ def quitanim():
                 pygame.quit()
                 sys.exit()
 
-            # Draw stuff
-            screen.fill((240,240,240))
-            moving_sprites.draw(screen)
-            moving_sprites.update(0.40)
+        # Draw stuff
+        screen.fill((240,240,240))
+        moving_sprites.draw(screen)
+        moving_sprites.update(0.40)
         pygame.display.flip()
         clock.tick(60)
 
@@ -177,7 +177,7 @@ def Mainscreen():
                 Settings()
             if power.get_rect(topleft=(10, 640)).collidepoint(mouse_pos):
                 main = False
-                quitanim()
+                Title()
         else:
             pass
         clock.tick(60)
@@ -191,11 +191,11 @@ def Settings():
     display = pygame.image.load('Ddoor.png').convert_alpha()
     sound = pygame.image.load('mdoor.png').convert_alpha()
 
-    screen.blit(background, (0, 0))
-    screen.blit(display, (150, 150))
-    screen.blit(customize, (520, 150))
-    screen.blit(sound, (890, 150))
     while set:
+        screen.blit(background, (0, 0))
+        Hover(pdoor1,pdoor2,520,150)
+        Hover(Ddoor1,Ddoor2,150,150)
+        Hover(mdoor1,mdoor2,890,150)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -211,6 +211,10 @@ def Settings():
 
                 if sound.get_rect(topleft=(890, 150)).collidepoint(mouse_pos):
                     pass
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    set = False
+                    Mainscreen()
 
         clock.tick(60)
         pygame.display.flip()
@@ -225,6 +229,10 @@ def Display():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    dis = False
+                    Settings()
 
         clock.tick(60)
         pygame.display.flip()
@@ -238,6 +246,10 @@ def DoorGame():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+                    Mainscreen()
 
         clock.tick(60)
         pygame.display.flip()
@@ -269,6 +281,12 @@ set1 = 'set1.png'
 set2 = 'set2.png'
 pow1 = 'pow1.png'
 pow2 = 'pow2.png'
+pdoor1 = 'pdoor.png'
+pdoor2 = 'pdoor2.png'
+Ddoor1 = 'Ddoor.png'
+Ddoor2 = 'Ddoor2.png'
+mdoor1 = 'mdoor.png'
+mdoor2 = 'mdoor2.png'
 
 # Quitting the Game Animation
 moving_sprites = pygame.sprite.Group()
