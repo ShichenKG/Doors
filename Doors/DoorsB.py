@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys, os, random
 from random import randint
 from pygame.locals import *
 
@@ -7,11 +7,11 @@ class QuitAnim(pygame.sprite.Sprite):
     def __init__(self,pos_x,pos_y):
         super().__init__()
         self.sprites = []
-        self.sprites.append(pygame.image.load('B1.png'))
-        self.sprites.append(pygame.image.load('B2.png'))
-        self.sprites.append(pygame.image.load('B3.png'))
-        self.sprites.append(pygame.image.load('B4.png'))
-        self.sprites.append(pygame.image.load('B5.png'))
+        self.sprites.append(pygame.image.load('an/B1.png'))
+        self.sprites.append(pygame.image.load('an/B2.png'))
+        self.sprites.append(pygame.image.load('an/B3.png'))
+        self.sprites.append(pygame.image.load('an/B4.png'))
+        self.sprites.append(pygame.image.load('an/B5.png'))
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
@@ -27,85 +27,101 @@ class QuitAnim(pygame.sprite.Sprite):
         self.image = self.sprites[int(self.current_sprite)]
 
 
-class Images(pygame.sprite.Sprite):
-    def __init__(self,image1,image2,x,y):
-        self.x = x
-        self.y = y
+class Zoom(pygame.sprite.Sprite):
+    def __init__(self,pos_x,pos_y):
         super().__init__()
         self.sprites = []
-        self.sprites.append(pygame.image.load(image1))
-        self.sprites.append(pygame.image.load(image2))
+        self.sprites.append(pygame.image.load('an/zoom0.png'))
+        self.sprites.append(pygame.image.load('an/zoom1.png'))
+        self.sprites.append(pygame.image.load('an/zoom2.png'))
+        self.sprites.append(pygame.image.load('an/zoom3.png'))
+        self.sprites.append(pygame.image.load('an/zoom4.png'))
+        self.sprites.append(pygame.image.load('an/zoom5.png'))
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
         self.rect = self.image.get_rect()
-        self.rect.topleft = [self.x, self.y]
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.topleft = [pos_x, pos_y]
 
-        self.mask = pygame.mask.from_surface(self.image)
+    def update(self, speed):
+        self.current_sprite += speed
+
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite = 4
+
+        self.image = self.sprites[int(self.current_sprite)]
 
 
-class Paddle(pygame.sprite.Sprite):
-    # This class represents a car. It derives from the "Sprite" class in Pygame.
-
-    def __init__(self, color, width, height):
-        # Call the parent class (Sprite) constructor
+class zoomplus(pygame.sprite.Sprite):
+    def __init__(self,pos):
         super().__init__()
+        self.sprites = LoadDir("an/zoom/")
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
 
-        # Pass in the color of the car, and its x and y position, width and height.
-        # Set the background color and set it to be transparent
-        self.image = pygame.Surface([width, height])
-        self.image.fill(BLACK)
-        self.image.set_colorkey(BLACK)
-
-        # Draw the paddle (a rectangle!)
-        pygame.draw.rect(self.image, color, [0, 0, width, height])
-
-        # Fetch the rectangle object that has the dimensions of the image.
         self.rect = self.image.get_rect()
-
-    def moveUp(self, pixels):
-        self.rect.y -= pixels
-        # Check that you are not going too far (off the screen)
-        if self.rect.y < 0:
-            self.rect.y = 0
-
-    def moveDown(self, pixels):
-        self.rect.y += pixels
-        # Check that you are not going too far (off the screen)
-        if self.rect.y > 400:
-            self.rect.y = 400
-
-
-class Ball(pygame.sprite.Sprite):
-    # This class represents a car. It derives from the "Sprite" class in Pygame.
-
-    def __init__(self, color, width, height):
-        # Call the parent class (Sprite) constructor
-        super().__init__()
-
-        # Pass in the color of the car, and its x and y position, width and height.
-        # Set the background color and set it to be transparent
-        self.image = pygame.Surface([width, height])
-        self.image.fill(BLACK)
-        self.image.set_colorkey(BLACK)
-
-        # Draw the ball (a rectangle!)
-        pygame.draw.rect(self.image, color, [0, 0, width, height])
-
-        self.velocity = [randint(4, 8), randint(-8, 8)]
-
-        # Fetch the rectangle object that has the dimensions of the image.
-        self.rect = self.image.get_rect()
+        self.rect.topleft = pos
 
     def update(self):
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.current_sprite += 1
+        self.image = self.sprites[self.current_sprite]
+        screen.blit(self.image,(0,0))
 
-    def bounce(self):
-        self.velocity[0] = -self.velocity[0]
-        self.velocity[1] = randint(-8, 8)
+
+class ClassHover(pygame.sprite.Sprite):
+    def __init__(self, pos, image1, image2 ):
+        super().__init__()
+        self.pos = pos
+        self.img1 = pygame.image.load(image1).convert_alpha()
+        self.img2 = pygame.image.load(image2).convert_alpha()
+        self.img_mask = pygame.mask.from_surface(self.img1)
+        self.rect = self.img1.get_rect(topleft=self.pos)
+        self.cur_img = self.img1
+
+        self.clicking = False
+
+    def update(self, click):
+
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            # Click
+            if click and self.clicking:
+                screen.blit(self.img1, self.pos)
+                print("clicking")
+            elif click:
+                screen.blit(self.img1, self.pos)
+                self.clicking = True
+                Score.inc()
+                print("clicked")
+            # Click hover
+
+            # Hover
+            else:
+                screen.blit(self.img2, self.pos)
+                self.clicking = False
+
+        # None
+        else:
+            screen.blit(self.img1, self.pos)
+            self.clicking = False
+
+
+class ClassScore():
+    def __init__(self):
+        self.value = 0
+
+    def inc(self, i=1):
+        self.value += i
+
+    def __str__(self):
+        return str(self.value)
+
+
+def LoadDir(dir):
+    l = []
+    for i in os.listdir(dir):
+        l.append(pygame.image.load(dir + i))
+    return l
 
 
 def Hover(image1,image2,x,y):
@@ -124,6 +140,9 @@ def Hover(image1,image2,x,y):
     else:
         l.cur_img = l.img1
         screen.blit(l.cur_img, (x,y))
+
+
+
 
 def quitanim():
     isquitting = True
@@ -192,6 +211,7 @@ def Mainscreen():
 
     # Event Loop / Game Loop
     while main:
+        mouse_pos = pygame.mouse.get_pos()
         screen.blit(background, (0, 0))
         screen.blit(bar, (0, 662))
         Hover(trash1,trash2,25,10)
@@ -205,7 +225,6 @@ def Mainscreen():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
                 if trash.get_rect(topleft=(25, 10)).collidepoint(mouse_pos):
                     pass
 
@@ -304,8 +323,16 @@ def Display():
         clock.tick(60)
         pygame.display.flip()
 
+
 def DoorGame():
     running = True
+    green = (0, 80, 0)
+    myFont = pygame.font.SysFont("Comicsans", 40)
+    Score_Label = myFont.render("Score: ", 1, green)
+    Score_Value = myFont.render(str(Score), 1, green)
+    mouse_pos = pygame.mouse.get_pos()
+    Button = ClassHover((500, 500), click1, click2)
+    click = pygame.image.load('loadbutton.png')
     while running:
         screen.fill((50, 200, 50))
 
@@ -317,12 +344,26 @@ def DoorGame():
                 if event.key == K_ESCAPE:
                     running = False
                     Mainscreen()
+            if event.type == MOUSEBUTTONDOWN:
+                click = event.__dict__
+            elif event.type == MOUSEBUTTONUP:
+                click = False
 
-        clock.tick(60)
+                # print(click.get_rect(topleft=(500, 500)).collidepoint(mouse_pos), event.__dict__)
+                # if click.get_rect(topleft=(500, 500)).collidepoint(mouse_pos):
+                #     print("CLICK")
+
+        # print(event)
+        Button.update(click)
+        Score_Value = myFont.render(str(Score), 1, green)
+        screen.blit(Score_Label, (1280 - 250, 2))
+        screen.blit(Score_Value, (1280 - 120, 2))
         pygame.display.flip()
+
 
 def Pong():
     running = True
+    plus = zoomplus((0,0))
     while running:
         screen.fill((50, 200, 50))
 
@@ -334,9 +375,11 @@ def Pong():
                 if event.key == K_ESCAPE:
                     running = False
                     Mainscreen()
-
+        plus.update()
         clock.tick(60)
         pygame.display.flip()
+
+
 
 pygame.init()
 pygame.mixer.init()
@@ -373,6 +416,8 @@ mdoor1 = 'mdoor.png'
 mdoor2 = 'mdoor2.png'
 pong1 = 'pong1.png'
 pong2 = 'pong2.png'
+click1 = 'loadbutton.png'
+click2 = 'loadbutton2.png'
 
 # Quitting the Game Animation
 moving_sprites = pygame.sprite.Group()
@@ -393,6 +438,8 @@ clock = pygame.time.Clock()
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 
+
+Score = ClassScore()
 # Game Start
 Title()
 
