@@ -1,8 +1,20 @@
-import pygame, sys, os, random
-from random import randint
+######################################
+# Shane Donivan
+# PM Class
+# Junior
+# 5/0/21
+# EOY Assignment - DoorsOS
+# A Bootleg OS System, meant to be fun
+#######################################
+import pygame, sys, os, time
 from pygame.locals import *
 
 
+#####################################################
+#
+# Classes
+#
+#####################################################
 class QuitAnim(pygame.sprite.Sprite):
     def __init__(self,pos_x,pos_y):
         super().__init__()
@@ -47,65 +59,70 @@ class Zoom(pygame.sprite.Sprite):
         self.current_sprite += speed
 
         if self.current_sprite >= len(self.sprites):
-            self.current_sprite = 4
+            self.current_sprite = 10
 
         self.image = self.sprites[int(self.current_sprite)]
 
 
-class zoomplus(pygame.sprite.Sprite):
+# Adds 1 frame per time clicked on  the "Click me" button
+class dooradd(pygame.sprite.Sprite):
     def __init__(self,pos):
         super().__init__()
-        self.sprites = LoadDir("an/zoom/")
+        self.sprites = LoadDir("an/add/")
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
 
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
-    def update(self):
+    def add(self):
         self.current_sprite += 1
+        if self.current_sprite >= len(self.sprites):
+            self.current_sprite = 88
+    def update(self):
         self.image = self.sprites[self.current_sprite]
-        screen.blit(self.image,(0,0))
+        screen.blit(self.image, (0, 0))
 
 
+# Specifically controls the "Click Me" Button
 class ClassHover(pygame.sprite.Sprite):
-    def __init__(self, pos, image1, image2 ):
+    def __init__(self, pos, image1, image2, image3,event=None):
         super().__init__()
         self.pos = pos
         self.img1 = pygame.image.load(image1).convert_alpha()
         self.img2 = pygame.image.load(image2).convert_alpha()
+        self.img3 = pygame.image.load(image3).convert_alpha()
         self.img_mask = pygame.mask.from_surface(self.img1)
         self.rect = self.img1.get_rect(topleft=self.pos)
         self.cur_img = self.img1
 
         self.clicking = False
+        self.click = False
 
-    def update(self, click):
-
+    def update(self,click):
         mouse_pos = pygame.mouse.get_pos()
+
         if self.rect.collidepoint(mouse_pos):
             # Click
             if click and self.clicking:
-                screen.blit(self.img1, self.pos)
-                print("clicking")
+                screen.blit(self.img3, self.pos)
+            # Click Hover
             elif click:
-                screen.blit(self.img1, self.pos)
+                screen.blit(self.img3, self.pos)
                 self.clicking = True
                 Score.inc()
-                print("clicked")
-            # Click hover
-
+                door.add()
             # Hover
             else:
                 screen.blit(self.img2, self.pos)
                 self.clicking = False
-
         # None
         else:
             screen.blit(self.img1, self.pos)
             self.clicking = False
 
 
+# Makes the Score add 1 per "Click me" button click
 class ClassScore():
     def __init__(self):
         self.value = 0
@@ -117,6 +134,15 @@ class ClassScore():
         return str(self.value)
 
 
+#####################################################
+#
+# Functions #
+#
+# Loading Images - LoadDir
+# Creates Buttons that switch between 2 images - Hover
+# Plays a Quit Animation - quitanim
+#
+#####################################################
 def LoadDir(dir):
     l = []
     for i in os.listdir(dir):
@@ -142,8 +168,6 @@ def Hover(image1,image2,x,y):
         screen.blit(l.cur_img, (x,y))
 
 
-
-
 def quitanim():
     isquitting = True
     CLOSE = pygame.USEREVENT + 1
@@ -167,6 +191,11 @@ def quitanim():
         clock.tick(60)
 
 
+#####################################################
+#
+# Game Screens
+#
+#####################################################
 def Title():
     title = True
     background = pygame.image.load('mmr.png').convert()
@@ -191,7 +220,6 @@ def Title():
                     title = False
                     quitanim()
 
-
         clock.tick(60)
         pygame.display.flip()
 
@@ -208,6 +236,10 @@ def Mainscreen():
     background = pygame.image.load('background.png').convert_alpha()
     start = pygame.image.load('dm1.png').convert_alpha()
     pong = pygame.image.load('pong1.png').convert_alpha()
+
+    myFont = pygame.font.SysFont("Madeupfont", 35)
+    Time_HourMin = myFont.render(time.strftime('%H:%M'), 1, BLACK)
+    Time_Date = myFont.render(time.strftime("%d %b %Y"), 1, BLACK)
 
     # Event Loop / Game Loop
     while main:
@@ -226,13 +258,16 @@ def Mainscreen():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if trash.get_rect(topleft=(25, 10)).collidepoint(mouse_pos):
-                    pass
+                    main = False
+                    Unavailable()
 
                 if internet.get_rect(topleft=(20, 150)).collidepoint(mouse_pos):
-                    pass
+                    main = False
+                    Unavailable()
 
                 if shop.get_rect(topleft=(20, 279)).collidepoint(mouse_pos):
-                    pass
+                    main = False
+                    Unavailable()
 
                 if doorgame.get_rect(topleft=(100, 10)).collidepoint(mouse_pos):
                     main = False
@@ -240,7 +275,7 @@ def Mainscreen():
 
                 if pong.get_rect(topleft=(32,380)).collidepoint(mouse_pos):
                     main = False
-                    Pong()
+                    Unavailable()
 
                 if start.get_rect(topleft=(0,660)).collidepoint(mouse_pos):
                     clicked += 1
@@ -266,6 +301,8 @@ def Mainscreen():
                 Title()
         else:
             pass
+        screen.blit(Time_HourMin, (1155, 672))
+        screen.blit(Time_Date, (1120, 691))
         clock.tick(60)
         pygame.display.flip()
 
@@ -276,12 +313,14 @@ def Settings():
     customize = pygame.image.load('pdoor.png').convert_alpha()
     display = pygame.image.load('Ddoor.png').convert_alpha()
     sound = pygame.image.load('mdoor.png').convert_alpha()
+    back = pygame.image.load('Back.png').convert_alpha()
 
     while set:
         screen.blit(background, (0, 0))
         Hover(pdoor1,pdoor2,520,150)
         Hover(Ddoor1,Ddoor2,150,150)
         Hover(mdoor1,mdoor2,890,150)
+        Hover(back1,back2,1100,600)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -293,10 +332,17 @@ def Settings():
                     Display()
 
                 if customize.get_rect(topleft=(520, 150)).collidepoint(mouse_pos):
-                    pass
+                    set = False
+                    Unavailable()
 
                 if sound.get_rect(topleft=(890, 150)).collidepoint(mouse_pos):
-                    pass
+                    set = False
+                    Unavailable()
+
+                if back.get_rect(topleft=(1100, 600)).collidepoint(mouse_pos):
+                    set = False
+                    Mainscreen()
+
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     set = False
@@ -308,13 +354,20 @@ def Settings():
 
 def Display():
     dis = True
+    back = pygame.image.load('Back.png').convert_alpha()
     while dis:
         screen.fill((50, 50, 50))
+        Hover(back1, back2, 1100, 600)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if back.get_rect(topleft=(1100, 600)).collidepoint(mouse_pos):
+                    dis = False
+                    Settings()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     dis = False
@@ -330,11 +383,13 @@ def DoorGame():
     myFont = pygame.font.SysFont("Comicsans", 40)
     Score_Label = myFont.render("Score: ", 1, green)
     Score_Value = myFont.render(str(Score), 1, green)
+    Goback = myFont.render("ESC to go back", 1, green)
     mouse_pos = pygame.mouse.get_pos()
-    Button = ClassHover((500, 500), click1, click2)
+    Button = ClassHover((500, 500), click1, click2,click3)
     click = pygame.image.load('loadbutton.png')
+    back = pygame.image.load('Back.png').convert_alpha()
     while running:
-        screen.fill((50, 200, 50))
+        screen.fill((180, 50, 50))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -346,26 +401,31 @@ def DoorGame():
                     Mainscreen()
             if event.type == MOUSEBUTTONDOWN:
                 click = event.__dict__
+
             elif event.type == MOUSEBUTTONUP:
                 click = False
 
-                # print(click.get_rect(topleft=(500, 500)).collidepoint(mouse_pos), event.__dict__)
-                # if click.get_rect(topleft=(500, 500)).collidepoint(mouse_pos):
-                #     print("CLICK")
 
         # print(event)
         Button.update(click)
         Score_Value = myFont.render(str(Score), 1, green)
         screen.blit(Score_Label, (1280 - 250, 2))
         screen.blit(Score_Value, (1280 - 120, 2))
+        screen.blit(Goback,(1000,650))
+        door.update()
         pygame.display.flip()
 
 
-def Pong():
-    running = True
-    plus = zoomplus((0,0))
-    while running:
-        screen.fill((50, 200, 50))
+def Unavailable():
+    shadowrealm = True
+    green = (0,100,0)
+    myFont = pygame.font.SysFont("Comicsans", 40)
+    Dumb = myFont.render("Hey! Sorry this Window is Currently Unavailable!", 1, green)
+    Dumber = myFont.render('~Shane M.D.', 1, green)
+    back = pygame.image.load('Back.png').convert_alpha()
+    while shadowrealm:
+        screen.fill((30,30,30))
+        Hover(back1, back2, 1100, 600)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -375,16 +435,29 @@ def Pong():
                 if event.key == K_ESCAPE:
                     running = False
                     Mainscreen()
-        plus.update()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if back.get_rect(topleft=(1100, 600)).collidepoint(mouse_pos):
+                    shadowrealm = False
+                    Title()
+
+        screen.blit(Dumb,(300,300))
+        screen.blit(Dumber,(800,500))
         clock.tick(60)
         pygame.display.flip()
 
 
-
+#####################################################
+#
+# Main Code
+# Pygame Initialization, Variables, Sprites
+#
+#####################################################
 pygame.init()
 pygame.mixer.init()
 mainClock = pygame.time.Clock()
 pygame.display.set_caption('DoorOS')
+screen = pygame.display.set_mode((1280, 720))
 font = 'Comic Sans MS'
 
 # Image Variables
@@ -418,18 +491,21 @@ pong1 = 'pong1.png'
 pong2 = 'pong2.png'
 click1 = 'loadbutton.png'
 click2 = 'loadbutton2.png'
+click3 = 'loadbutton3.png'
+back1 = 'Back.png'
+back2 = 'Back2.png'
 
-# Quitting the Game Animation
+# Sprite Groups
 moving_sprites = pygame.sprite.Group()
 bckgrnd = QuitAnim(0,0)
 moving_sprites.add(bckgrnd)
 hover_sprites = pygame.sprite.Group()
+Score = ClassScore()
+door = dooradd((300, 0))
 
-# Random Variables
+# Shows Errors, Fullscreen, and colors
 successes, failures = pygame.init()
 print("Initializing pygame: {0} successes and {1} failures.".format(successes, failures))
-pygame.time.delay(1000)
-screen = pygame.display.set_mode((1280, 720))
 global fullscreen
 fullscreen = False
 global num
@@ -438,8 +514,6 @@ clock = pygame.time.Clock()
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 
-
-Score = ClassScore()
 # Game Start
 Title()
 
