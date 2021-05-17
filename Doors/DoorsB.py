@@ -73,20 +73,22 @@ class dooradd(pygame.sprite.Sprite):
         self.sprites = LoadDir("an/add/")
         self.current_sprite = 0
         self.image = self.sprites[self.current_sprite]
-
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
     def add(self):
+        print(self.current_sprite)
         self.current_sprite += 1
         if self.current_sprite >= len(self.sprites):
-            self.current_sprite = 88
+            self.current_sprite = len(self.sprites)
     def update(self):
         self.image = self.sprites[self.current_sprite]
         screen.blit(self.image, (0, 0))
 
 
 # Specifically controls the "Click Me" Button
+
+
 class ClassHover(pygame.sprite.Sprite):
     def __init__(self, pos, image1, image2, image3,event=None):
         super().__init__()
@@ -149,6 +151,7 @@ def LoadDir(dir):
     l = []
     for i in os.listdir(dir):
         l.append(pygame.image.load(dir + i))
+        print(i)
     return l
 
 
@@ -359,10 +362,21 @@ def Settings():
 # You can Fullscreen
 def Display():
     dis = True
+    global num
+    global fullscreen
+    full = pygame.image.load('fullscreen.png').convert_alpha()
     back = pygame.image.load('Back.png').convert_alpha()
+    monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
+    if fullscreen:
+        screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+    else:
+        screen = pygame.display.set_mode((1280,720))
+
     while dis:
         screen.fill((50, 50, 50))
         Hover(back1, back2, 1100, 600)
+        Hover(full1,full2,100,100)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -373,6 +387,16 @@ def Display():
                 if back.get_rect(topleft=(1100, 600)).collidepoint(mouse_pos):
                     dis = False
                     Settings()
+                if full.get_rect(topleft=(0,0)).collidepoint(mouse_pos):
+                    num += 1
+                    if (num % 2) == 0:
+                        fullscreen = True
+                    else:
+                        fullscreen = False
+                    if fullscreen:
+                        screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+                    else:
+                        screen = pygame.display.set_mode((1280, 720))
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     dis = False
@@ -500,6 +524,9 @@ click2 = 'loadbutton2.png'
 click3 = 'loadbutton3.png'
 back1 = 'Back.png'
 back2 = 'Back2.png'
+full1 = 'fullscreen.png'
+full2 = 'fullscreen2.png'
+
 
 # Sprite Groups
 moving_sprites = pygame.sprite.Group()
